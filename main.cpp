@@ -1,7 +1,7 @@
 #include "game.hpp"
 
-int main(void){
-
+int	main(void)
+{
 	Game _game;
 
 	if (!_game.getInit()){
