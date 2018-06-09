@@ -5,13 +5,16 @@
 #include <iostream>
 #include "gameObject.hpp"
 
-class Game {
-
+class Game
+{
 	private:
 		WINDOW *win;
 		int isInit;
 		gameObject *entityList[100];
 		int	listLength;
+
+		//private prototypes
+		void	testkey(void);
 
 	public:
 		Game(void);

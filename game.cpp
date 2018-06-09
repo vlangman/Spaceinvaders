@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "ship.hpp"
+#include <unistd.h>
 
 //start canonical
 Game::Game(void)
@@ -111,16 +112,42 @@ static int	GameMenu(std::string menuType)
 	return (0);
 }
 
-static void	testkey(void)
+void	Game::testkey()
 {
-	int	read_char;
-	int	x, y;
-	bool	paused;
+	int			read_char;
+	int			x, y;
+	bool		paused;
+	int			move_x = 0;
+	int			move_y = 0;
+	gameObject	player;
+	gameObject	enemy;
 
+	enemy.setPosition(20, 10);
+	enemy.setSprite('#');
+
+	player.setPosition(40, 35);
+	player.setSprite('?');
+	player.setBulletType(' ');
+	player.setBulletPosition(39, 35);
+
+	assignEntity(player);
+	assignEntity(enemy);
 	paused = false;
 	while (1)
 	{
 		wclear(stdscr);
+		usleep(24000);
+		if (player.getBulletType() != " ")
+		{
+			if (player.getBulletPos_y() > 0)
+				player.setBulletPosition(39, player.getBulletPos_y() - 1);
+			else
+			{
+				player.setBulletPosition(player.getXPosition(), player.getYPosition());
+				player.setBulletType(' ');
+			}
+		}
+		updateBoard();
 		getmaxyx(stdscr, y, x);
 		move(0,0);
 		wprintw(stdscr, "x:%d | y:%d", x, y);
@@ -134,8 +161,8 @@ static void	testkey(void)
 				attron(A_BOLD);
 				addstr("PAUSED");
 				attroff(A_BOLD);
-				move((y / 2) + 1, (x / 2) - 7);
-				addstr("SCREEN TO SMALL");
+				move((y / 2) + 1, (x / 2) - 8);
+				addstr("SCREEN TOO SMALL");
 				move((y / 2) + 2, (x / 2) - 6);
 				addstr("PLEASE RESIZE");
 				refresh();
@@ -154,30 +181,42 @@ static void	testkey(void)
 		read_char = getch();
 		if (read_char == 100)
 			break;
+		else if (read_char == 260)
+		{
+			if (player.getXPosition() > 0)
+				player.setPosition(player.getXPosition() - 1, player.getYPosition());
+		}
+		else if (read_char == 261)
+		{
+			if (player.getXPosition() < 79)
+				player.setPosition(player.getXPosition() + 1, player.getYPosition());
+		}
+		else if (read_char == 258)
+		{
+			if (player.getYPosition() < 39)
+				player.setPosition(player.getXPosition(), player.getYPosition() + 1);
+		}
+		else if (read_char == 259)
+		{
+			if (player.getYPosition() > 0)
+				player.setPosition(player.getXPosition(), player.getYPosition() - 1);
+		}
+		else if (read_char == 32)
+		{
+			//if (!maxbullets)
+				player.setBulletType('^');
+				player.setBulletPosition(player.getXPosition(), player.getYPosition() - 1);
+		}
 	}
 }
 
 void		Game::run(void)
-{	
-	gameObject	player;
-	gameObject	enemy;
-	bool		mainGameLoop = true;
-	bool		retryGameLoop = true;
+{
+	bool	mainGameLoop = true;
+	bool	retryGameLoop = true;
 
 	if (!GameMenu("START GAME"))
 	{
-		enemy.setPosition(20, 10);
-		enemy.setSprite('#');
-
-		player.setPosition(10, 5);
-		player.setSprite('?');
-
-		assignEntity(player);
-		assignEntity(enemy);
-
-		updateBoard();
-		refresh();
-
 		retryGameLoop = true;
 		while(retryGameLoop)
 		{
@@ -204,17 +243,22 @@ void		Game::assignEntity(gameObject & _entity)
 {
 	if (this->listLength + 1 < 100) {
 		this->entityList[this->listLength] = &_entity;
-		this->listLength += 1;
+		this->listLength++;
 	}
 }
 
 void		Game::updateBoard(void){
 
 	for(int i = 0; i < this->listLength; i++){
-		int xpos = this->entityList[i]->getXPosition();
-		int ypos = this->entityList[i]->getYPosition();
+		int xposShip = this->entityList[i]->getXPosition();
+		int yposShip = this->entityList[i]->getYPosition();
 		std::string pSprite = this->entityList[i]->getSprite();
-		mvaddstr(ypos, xpos, pSprite.c_str());
+		mvaddstr(yposShip, xposShip, pSprite.c_str());
+
+		int xposBullet = this->entityList[i]->getBulletPos_x();
+		int yposBullet = this->entityList[i]->getBulletPos_y();
+		std::string pBullet = this->entityList[i]->getBulletType();
+		mvaddstr(yposBullet, xposBullet, pBullet.c_str());
 	}
 	return;
 }
