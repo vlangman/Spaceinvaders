@@ -40,7 +40,7 @@ void		Game::init(void)
 	this->win = initscr();
 	noecho();
 	//access keys
-	keypad(stdscr, TRUE);
+	keypad(this->win, TRUE);
 	//no buffer on key press
 	nodelay(this->win, true);
 	//hide the cursor
@@ -49,7 +49,7 @@ void		Game::init(void)
 	{
 		endwin();
 		printf("ERROR: Terminal does not support color.\n");
-		exit(1);
+		return;
 	}
 	start_color();
 	attron(A_BOLD);
@@ -117,46 +117,31 @@ void	Game::testkey()
 	int			read_char;
 	int			x, y;
 	bool		paused;
-	int			move_x = 0;
-	int			move_y = 0;
-	gameObject	player;
-	gameObject	enemy;
+	Ship		player;
 
-	enemy.setPosition(20, 10);
-	enemy.setSprite('#');
+	
 
 	player.setPosition(40, 35);
 	player.setSprite('?');
-	player.setBulletType(' ');
-	player.setBulletPosition(39, 35);
 
 	assignEntity(player);
-	assignEntity(enemy);
+	
 	paused = false;
 	while (1)
 	{
-		wclear(stdscr);
+		wclear(this->win);
 		usleep(24000);
-		if (player.getBulletType() != " ")
-		{
-			if (player.getBulletPos_y() > 0)
-				player.setBulletPosition(39, player.getBulletPos_y() - 1);
-			else
-			{
-				player.setBulletPosition(player.getXPosition(), player.getYPosition());
-				player.setBulletType(' ');
-			}
-		}
+		moveObjects();
 		updateBoard();
-		getmaxyx(stdscr, y, x);
+		getmaxyx(this->win, y, x);
 		move(0,0);
-		wprintw(stdscr, "x:%d | y:%d", x, y);
+		wprintw(this->win, "x:%d | y:%d", x, y);
 		if ((x < 80) || (y < 40))
 		{
 			while ((x < 80) || (y < 40))
 			{
-				getmaxyx(stdscr, y, x);
-				wclear(stdscr);
+				getmaxyx(this->win, y, x);
+				wclear(this->win);
 				move(y / 2, (x / 2) - 3);
 				attron(A_BOLD);
 				addstr("PAUSED");
@@ -203,9 +188,10 @@ void	Game::testkey()
 		}
 		else if (read_char == 32)
 		{
-			//if (!maxbullets)
-				player.setBulletType('^');
-				player.setBulletPosition(player.getXPosition(), player.getYPosition() - 1);
+			Bullet *_bullet = new Bullet(-1);
+			_bullet->setPosition(player.getXPosition(), player.getYPosition() - 1);
+			_bullet->setSprite('*');
+			assignEntity(*_bullet);
 		}
 	}
 }
@@ -254,11 +240,13 @@ void		Game::updateBoard(void){
 		int yposShip = this->entityList[i]->getYPosition();
 		std::string pSprite = this->entityList[i]->getSprite();
 		mvaddstr(yposShip, xposShip, pSprite.c_str());
-
-		int xposBullet = this->entityList[i]->getBulletPos_x();
-		int yposBullet = this->entityList[i]->getBulletPos_y();
-		std::string pBullet = this->entityList[i]->getBulletType();
-		mvaddstr(yposBullet, xposBullet, pBullet.c_str());
 	}
 	return;
+}
+
+
+void Game::moveObjects(void){
+	for (int i = 0; i < this->listLength; i++){
+		this->entityList[i]->updatePosition();
+	}
 }

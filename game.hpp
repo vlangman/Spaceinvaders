@@ -30,6 +30,7 @@ class Game
 		void	close(void);
 
 		void	assignEntity(gameObject & _entity);
+		void	moveObjects(void);
 		void	updateBoard(void);
 };
 
