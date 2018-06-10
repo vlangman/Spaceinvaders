@@ -1,4 +1,5 @@
 #include "gameObject.hpp"
+#include "game.hpp"
 
 //start
 gameObject::gameObject(void)
@@ -52,7 +53,7 @@ int		gameObject::getYPosition(void) const
 	return (this->y_pos);
 }
 
-void	gameObject::updatePosition(void)
+void	gameObject::updatePosition(Game & _game)
 {
 	return ;
 }

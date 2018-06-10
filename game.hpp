@@ -4,6 +4,10 @@
 #include <ncurses.h>
 #include <iostream>
 #include "gameObject.hpp"
+#include "ship.hpp"
+#include <unistd.h>
+#include "alien.hpp"
+
 
 class Game
 {
@@ -30,8 +34,9 @@ class Game
 		void	close(void);
 
 		void	assignEntity(gameObject & _entity);
-		void	moveObjects(void);
+		void	moveObjects();
 		void	updateBoard(void);
+
 };
 
 #endif

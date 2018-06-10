@@ -1,6 +1,5 @@
 #include "game.hpp"
-#include "ship.hpp"
-#include <unistd.h>
+
 
 //start canonical
 Game::Game(void)
@@ -118,20 +117,27 @@ void	Game::testkey()
 	int			x, y;
 	bool		paused;
 	Ship		player;
+	Alien		alien;
 
 	
+	alien.setPosition(35, 35);
+	alien.setSprite('&');
+
+
 
 	player.setPosition(40, 35);
 	player.setSprite('?');
 
 	assignEntity(player);
-	
+	assignEntity(alien);
+
 	paused = false;
 	while (1)
 	{
 		wclear(this->win);
 		usleep(24000);
 		moveObjects();
+
 		updateBoard();
 		getmaxyx(this->win, y, x);
 		move(0,0);
@@ -247,6 +253,6 @@ void		Game::updateBoard(void){
 
 void Game::moveObjects(void){
 	for (int i = 0; i < this->listLength; i++){
-		this->entityList[i]->updatePosition();
+		this->entityList[i]->updatePosition(*this);
 	}
 }

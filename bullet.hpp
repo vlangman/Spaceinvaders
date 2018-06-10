@@ -3,6 +3,7 @@
 # include "gameObject.hpp"
 # include <iostream>
 
+class Game;
 
 class Bullet : public gameObject {
 	private:
@@ -16,7 +17,7 @@ class Bullet : public gameObject {
 		Bullet(const int _direction);
 		Bullet		&operator=(const Bullet & _rhs);
 
-		void	updatePosition(void);
+		void	updatePosition(Game &_game);
 };
 
 #endif

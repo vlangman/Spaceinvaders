@@ -1,4 +1,5 @@
 #include "bullet.hpp"
+#include "game.hpp"
 
 //start canonical
 Bullet::Bullet(void)
@@ -28,8 +29,12 @@ Bullet	&Bullet::operator=(const Bullet & _rhs)
 	return (*this);
 }
 
-void	Bullet::updatePosition(void)
+void	Bullet::updatePosition(Game & _game)
 {
+	
+	
 	this->setPosition(this->getXPosition(), this->getYPosition() + this->direction);
+	
+	return;
 }
 //end canonical!!

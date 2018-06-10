@@ -2,6 +2,8 @@
 # define GAMEOBJECT_HPP
 # include <iostream>
 
+class Game;
+
 class gameObject
 {
 	private:
@@ -21,7 +23,7 @@ class gameObject
 		int				getYPosition(void) const;
 		void			setPosition(int _x, int _y);
 		void			setSprite(char _c);
-		virtual void	updatePosition(void);
+		virtual void	updatePosition(Game & _game);
 
 		std::string	getSprite(void) const;
 };
